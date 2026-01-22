@@ -3,17 +3,22 @@ import Link from "next/link";
 export default function Home() {
   return (
     <main className="flex-grow">
-      <div className="container mx-auto">
-        {/* seção Hero */}
-        <section>
-          <h1>Receitas Deliciosas</h1>
-          <p>Descubra receitas simples e saborosas para todas as ocasiões</p>
+      {/* seção Hero */}
+      <section className="bg-orange-50 py-10">
+        <div className="flex flex-col gap-4 items-center container mx-auto">
+          <h1 className="text-5xl font-bold">Receitas Deliciosas</h1>
+          <p className="text-xl">
+            Descubra receitas simples e saborosas para todas as ocasiões
+          </p>
 
-          <Link href="/receitas">
+          <Link
+            className="bg-orange-500 text-white font-bold rounded-lg px-3 py-2"
+            href="/receitas"
+          >
             Ver todas as receitas
           </Link>
-        </section>
-      </div>
+        </div>
+      </section>
     </main>
   );
 }
