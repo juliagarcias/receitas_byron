@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="flex-grow">
+    <main className="grow">
       {/* seção Hero */}
       <section className="bg-orange-50 py-10">
         <div className="flex flex-col gap-4 items-center container mx-auto">
