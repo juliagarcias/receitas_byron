@@ -9,9 +9,9 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
       <div className="border border-slate-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
         <div className="relative h-48 w-full">
           <Image 
-          src={recipe.image} 
-          fill 
-          alt={recipe.title}
+            src={recipe.image} 
+            fill 
+            alt={recipe.title}
           />
         </div>
 
