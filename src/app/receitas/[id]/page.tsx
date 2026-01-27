@@ -1,4 +1,4 @@
-import InfoPill from "@/app/components/InfoPill/index.";
+import InfoPill from "@/app/components/InfoPill";
 import PreparationStep from "@/app/components/PreparationStep";
 import { recipes } from "@/app/lib/data";
 import { ChevronLeft } from "lucide-react";
