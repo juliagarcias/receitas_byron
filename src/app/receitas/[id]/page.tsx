@@ -1,6 +1,6 @@
 import InfoPill from "@/app/components/InfoPill/index.";
 import PreparationStep from "@/app/components/PreparationStep";
-import { Recipe } from "@/app/lib/data";
+import { recipes } from "@/app/lib/data";
 import { ChevronLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,7 +20,7 @@ export default function ReceitaPage({ params }: RecipePageProps) {
     }
 
     return (
-        <main className="flex-grow  py-8">
+        <main className="flex-grow py-8">
             <div className="container mx-auto">
                 <Link className="flex text-orange-500 hover:text-orange-700 mb-6" href="/receitas">
                 <ChevronLeft /> 

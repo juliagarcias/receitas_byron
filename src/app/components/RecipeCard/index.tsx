@@ -2,6 +2,9 @@ import { Recipe } from "@/app/lib/data";
 import Image from "next/image";
 import Link from "next/link";
 
+interface RecipeCardProps {
+  recipe: Recipe;
+}
 
 export default function RecipeCard({ recipe }: RecipeCardProps) {
   return (
