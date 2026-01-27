@@ -1,5 +1,5 @@
-import RecipeCard from "../components/RecipeCard";
-import { recipes } from "../lib/data";
+import RecipeCard from "@/app/components/RecipeCard";
+import { recipes } from "@/app/lib/data";
 
 export default function ReceitasPage(){
     return (

@@ -12,11 +12,12 @@ interface RecipePageProps {
     }
 }
 
-export default function ReceitaPage({ params }: RecipePageProps) {
-    const recipe = recipes.find((recipe) => recipe.id === params.id)
+export default async function ReceitaPage({ params }: RecipePageProps) {
+    const { id } = await params;
+    const recipe = recipes.find((recipe) => recipe.id === id);
 
     if (!recipe) {
-        return notFound()
+        return notFound();
     }
 
     return (
