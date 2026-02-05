@@ -1,24 +1,31 @@
-"use client";
+"use client"
 
 import RecipeCard from "@/app/components/RecipeCard";
-import { recipes } from "@/app/lib/data";
+import RecipeFormModal from "@/app/components/RecipeFormModal";
+import { recipes as initialRecipes } from "@/app/lib/data";
+import type { Recipe } from "@/app/lib/data";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import RecipeFormModal from "../components/RecipeFormModal";
 
 export default function ReceitasPage() {
-  const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false);
+  const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false)
+  const [recipes, setRecipes] = useState<Recipe[]>(initialRecipes)
+
+  const handleCreateRecipe = (recipeData: Omit<Recipe, "id">) => {
+    const newRecipe: Recipe = {
+      ...recipeData,
+      id: (recipes.length + 1).toString()
+    }
+    setRecipes((prev) => [...prev, newRecipe])
+  }
 
   return (
-    <main className="grow py-8">
+    <main className="flex-grow py-8">
       <div className="container mx-auto">
         <div className="flex justify-between w-full">
           <h1 className="text-3xl font-bold">Todas as receitas</h1>
 
-          <button
-            onClick={() => setIsRecipeModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-white bg-black hover:bg-gray-800 transition-colors"
-          >
+          <button onClick={() => setIsRecipeModalOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-white bg-black hover:bg-gray-800 transition-colors">
             <Plus size={16} />
             Nova receita
           </button>
@@ -31,7 +38,7 @@ export default function ReceitasPage() {
         </div>
       </div>
 
-      <RecipeFormModal isOpen={isRecipeModalOpen} onClose={() => setIsRecipeModalOpen(false)}/>
+      <RecipeFormModal isOpen={isRecipeModalOpen} onClose={() => setIsRecipeModalOpen(false)} onSave={handleCreateRecipe} />
     </main>
-  );
+  )
 }

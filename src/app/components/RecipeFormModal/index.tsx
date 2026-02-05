@@ -1,31 +1,34 @@
+import { useFieldArray, useForm } from "react-hook-form";
+import { Dialog, DialogHeader, DialogTitle, DialogContent } from "../ui/dialog";
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
   RecipeFormData,
   recipeSchema,
-} from "@/app/lib/formValidationSchemas/recipeShema";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-import { useFieldArray, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+} from "@/app/lib/formValidationSchemas/recipeSchema";
+import { Recipe } from "@/app/lib/data";
 
 interface RecipeFormModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSave: (recipe: Omit<Recipe, "id">) => void;
 }
 
 const DEFAULT_VALUES: RecipeFormData = {
   title: "",
   category: "",
   description: "",
-  imageURL: "",
+  image: "",
   prepTime: "",
   cookTime: "",
   servings: 1,
   ingredients: [{ value: "" }],
   instructions: [{ value: "" }],
-};
+}
 
 export default function RecipeFormModal({
   isOpen,
   onClose,
+  onSave
 }: RecipeFormModalProps) {
   const {
     register,
@@ -36,22 +39,22 @@ export default function RecipeFormModal({
   } = useForm<RecipeFormData>({
     resolver: yupResolver(recipeSchema),
     mode: "onSubmit",
-    defaultValues: DEFAULT_VALUES,
+    defaultValues: DEFAULT_VALUES
   });
 
   const {
     fields: ingredientFields,
-    append: appendIngredient,
-    remove: removeIngredient,
+    append: appendIngredients,
+    remove: removeIngredients,
   } = useFieldArray({
     control,
     name: "ingredients",
   });
 
   const {
-    fields: instructionsFields,
-    append: appendInstruction,
-    remove: removeInstruction,
+    fields: instructionFields,
+    append: appendInstructions,
+    remove: removeInstructions,
   } = useFieldArray({
     control,
     name: "instructions",
@@ -61,10 +64,11 @@ export default function RecipeFormModal({
     const recipeData = {
       ...data,
       ingredients: data.ingredients.map((ingredient) => ingredient.value),
-      instructions: data.instructions.map((instruction) => instruction.value),
-    };
+      instructions: data.instructions.map((instruction) => instruction.value)
+    }
 
-    console.log(data);
+    console.log(recipeData);
+    onSave(recipeData);
     reset();
     onClose();
   };
@@ -75,7 +79,7 @@ export default function RecipeFormModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-white min-w-2xl max-h-[90dvh] overflow-y-scroll">
         <DialogHeader>
-          <DialogTitle>Nova Receita</DialogTitle>
+          <DialogTitle>Nova receita</DialogTitle>
         </DialogHeader>
 
         <form
@@ -83,7 +87,7 @@ export default function RecipeFormModal({
           className="flex flex-col gap-4 w-full"
         >
           <div className="grid grid-cols-2 gap-2">
-            {/* Título */}
+            {/* Titulo */}
             <div className="flex flex-col gap-1">
               <label htmlFor="title">Título</label>
               <input
@@ -131,32 +135,32 @@ export default function RecipeFormModal({
             )}
           </div>
 
-          {/* URL imagem */}
+          {/* URL da imagem */}
           <div className="flex flex-col gap-1">
-            <label htmlFor="imageUrl">URL da Imagem</label>
+            <label htmlFor="image">URL da imagem</label>
             <input
               type="text"
               className={inputStyle}
-              id="imageUrl"
+              id="image"
               placeholder="/placeholder.svg"
-              {...register("imageURL")}
+              {...register("image")}
             />
-            {errors.imageURL && (
+            {errors.image && (
               <span className="text-sm text-red-500">
-                {errors.imageURL.message}
+                {errors.image.message}
               </span>
             )}
           </div>
 
           <div className="grid grid-cols-3 gap-2">
-            {/* Tempo de preparo*/}
+            {/* Tempo de preparo */}
             <div className="flex flex-col gap-1">
-              <label htmlFor="prepTime">Tempo de Preparo</label>
+              <label htmlFor="prepTime">Tempo de preparo</label>
               <input
                 className={inputStyle}
                 type="text"
                 id="prepTime"
-                placeholder="30 minutos"
+                placeholder="15 minutos"
                 {...register("prepTime")}
               />
               {errors.prepTime && (
@@ -168,12 +172,12 @@ export default function RecipeFormModal({
 
             {/* Tempo de cozimento */}
             <div className="flex flex-col gap-1">
-              <label htmlFor="cookTime">Tempo de Cozimento</label>
+              <label htmlFor="cookTime">Tempo de cozimento</label>
               <input
                 className={inputStyle}
                 type="text"
                 id="cookTime"
-                placeholder="15 minutos"
+                placeholder="30 minutos"
                 {...register("cookTime")}
               />
               {errors.cookTime && (
@@ -201,32 +205,28 @@ export default function RecipeFormModal({
             </div>
           </div>
 
-          {/* Lista de ingredientes */}
+          {/* Lista de ingredients */}
           <div className="flex flex-col gap-1">
-            <label htmlFor="ingredientes">Ingredientes</label>
+            <label htmlFor="ingredients">Ingredientes</label>
             <div className="flex flex-col gap-1">
-              {/* Conteudo */}
+              {/* conteúdo */}
               {ingredientFields.map((field, index) => (
                 <div key={field.id} className="flex gap-2 w-full">
                   <div className="flex-grow">
                     <input
-                      id="ingredientes"
+                      id="ingredients"
                       type="text"
                       className={inputStyle}
                       placeholder="Digite um ingrediente"
                       {...register(`ingredients.${index}.value`)}
                     />
-                    {errors.ingredients?.[index]?.value && (
-                      <span className="text-sm text-red-500">
-                        {errors.ingredients?.[index].value.message}
-                      </span>
-                    )}
+                    {errors.ingredients?.[index]?.value && <span className="text-sm text-red-500">{errors.ingredients?.[index].value.message}</span>}
                   </div>
                   {ingredientFields.length > 1 && (
                     <button
                       type="button"
                       className="bg-white border border-zinc-300 rounded-md hover:bg-gray-100 transition-colors px-4 py-2 font-medium"
-                      onClick={() => removeIngredient(index)}
+                      onClick={() => removeIngredients(index)}
                     >
                       Remover
                     </button>
@@ -237,7 +237,7 @@ export default function RecipeFormModal({
               <button
                 type="button"
                 className="bg-white border border-zinc-300 rounded-md hover:bg-gray-100 transition-colors px-4 py-2 font-medium w-fit"
-                onClick={() => appendIngredient({ value: "" })}
+                onClick={() => appendIngredients({ value: "" })}
               >
                 Adicionar ingrediente
               </button>
@@ -248,8 +248,8 @@ export default function RecipeFormModal({
           <div className="flex flex-col gap-1">
             <label htmlFor="instructions">Instruções</label>
             <div className="flex flex-col gap-1">
-              {/* Conteudo */}
-              {instructionsFields.map((field, index) => (
+              {/* conteúdo */}
+              {instructionFields.map((field, index) => (
                 <div key={field.id} className="flex gap-2 w-full">
                   <div className="flex-grow">
                     <textarea
@@ -258,27 +258,25 @@ export default function RecipeFormModal({
                       placeholder="Digite uma instrução"
                       {...register(`instructions.${index}.value`)}
                     />
-                    {errors.instructions?.[index]?.value && (
-                      <span className="text-sm text-red-500">
-                        {errors.instructions?.[index].value.message}
-                      </span>
-                    )}
+                    {errors.instructions?.[index]?.value && <span className="text-sm text-red-500">{errors.instructions?.[index].value.message}</span>}
                   </div>
-                  {instructionsFields.length > 1 && (
+
+                  {instructionFields.length > 1 && (
                     <button
                       type="button"
                       className="bg-white border border-zinc-300 rounded-md hover:bg-gray-100 transition-colors px-4 py-2 font-medium h-fit"
-                      onClick={() => removeInstruction(index)}
+                      onClick={() => removeInstructions(index)}
                     >
                       Remover
                     </button>
                   )}
                 </div>
               ))}
+
               <button
                 type="button"
                 className="bg-white border border-zinc-300 rounded-md hover:bg-gray-100 transition-colors px-4 py-2 font-medium w-fit"
-                onClick={() => appendInstruction({ value: "" })}
+                onClick={() => appendInstructions({ value: "" })}
               >
                 Adicionar instrução
               </button>
@@ -295,7 +293,7 @@ export default function RecipeFormModal({
             </button>
             <button
               type="submit"
-              className="bg-black text-white rounded-md hover:bg-gray-800 transition-colors px-4 py-2 font-medium"
+              className="bg-black rounded-md text-white hover:bg-gray-800 transition-colors px-4 py-2 font-medium"
             >
               Criar receita
             </button>
