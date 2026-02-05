@@ -1,3 +1,6 @@
+"use client";
+
+
 import { Recipe } from "@/app/lib/data";
 import { Edit, Trash2 } from "lucide-react";
 import Image from "next/image";
@@ -6,10 +9,11 @@ import React from "react";
 
 interface RecipeCardProps {
   recipe: Recipe;
-  onEdit: () => void
+  onEdit: () => void;
+  onDelete: () => void
 }
 
-export default function RecipeCard({ recipe, onEdit }: RecipeCardProps) {
+export default function RecipeCard({ recipe, onEdit, onDelete }: RecipeCardProps) {
 
   const handleEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -18,6 +22,7 @@ export default function RecipeCard({ recipe, onEdit }: RecipeCardProps) {
 
   const handleDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    onDelete()
   }
 
   return (
