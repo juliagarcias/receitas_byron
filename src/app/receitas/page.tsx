@@ -3,7 +3,6 @@
 import DeleteConfirmationModal from "@/app/components/DeleteConfirmationModal";
 import RecipeCard from "@/app/components/RecipeCard";
 import RecipeFormModal from "@/app/components/RecipeFormModal";
-import { recipes as initialRecipes } from "@/app/lib/data";
 import type { Recipe } from "@/app/lib/data";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -13,7 +12,7 @@ export default function ReceitasPage() {
   const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false);
   const [isDeleteConfirmationModalOpen, setIsDeleteConfirmationModalOpen] =
     useState(false);
-  const [recipes, setRecipes] = useState<Recipe[]>();
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | undefined>(
     undefined
