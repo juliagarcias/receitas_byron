@@ -3,20 +3,34 @@
 import DeleteConfirmationModal from "@/app/components/DeleteConfirmationModal";
 import RecipeCard from "@/app/components/RecipeCard";
 import RecipeFormModal from "@/app/components/RecipeFormModal";
-import { recipes as initialRecipes } from "@/app/lib/data";
 import type { Recipe } from "@/app/lib/data";
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import api from "../lib/api";
+import { toast } from "sonner";
 
 export default function ReceitasPage() {
   const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false);
   const [isDeleteConfirmationModalOpen, setIsDeleteConfirmationModalOpen] =
     useState(false);
-  const [recipes, setRecipes] = useState<Recipe[]>(initialRecipes);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | undefined>(
-    undefined
+    undefined,
   );
+
+  useEffect(() => {
+    const fetchRecipes = async () => {
+      try {
+        const response = await api.get("/recipes");
+        setRecipes(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar receitas:", error);
+        toast.error("Erro ao buscar receitas, tente novamente mais tarde.");
+      }
+    };
+    fetchRecipes();
+  }, []);
 
   const handleOpenCreateModal = () => {
     setModalMode("create");
@@ -34,23 +48,39 @@ export default function ReceitasPage() {
     setIsRecipeModalOpen(false);
   };
 
-  const handleSaveRecipe = (recipeData: Omit<Recipe, "id"> | Recipe) => {
-    if (modalMode === "create") {
-      const newRecipe: Recipe = {
-        ...recipeData,
-        id: (recipes.length + 1).toString(),
-      };
-      setRecipes((prev) => [...prev, newRecipe]);
-    } else {
-      // modo "edit"
-      const updatedRecipe = recipeData as Recipe;
-      setRecipes((prev) =>
-        prev.map((recipe) =>
-          recipe.id === updatedRecipe.id ? updatedRecipe : recipe
-        )
+  const handleSaveRecipe = async (recipeData: Omit<Recipe, "id"> | Recipe) => {
+    try {
+      if (modalMode === "create") {
+        const response = await api.post("/recipes", recipeData);
+        const newRecipe = response.data;
+        setRecipes((prev) => [...prev, newRecipe]);
+        toast.success("Receita criada com sucesso!");
+      } else {
+        // modo "edit"
+        const updatedRecipe = recipeData as Recipe;
+
+        const response = await api.put(
+          `/recipes/${updatedRecipe.id}`,
+          updatedRecipe,
+        );
+
+        setRecipes((prev) =>
+          prev.map((recipe) =>
+            recipe.id === updatedRecipe.id ? response.data : recipe,
+          ),
+        );
+
+        toast.success("Receita editada com sucesso!");
+      }
+      handleCloseModal();
+      
+    } catch (error) {
+      console.error(
+        `Erro ao ${modalMode === "create" ? "criar" : "editar"} a receita:`,
+        error,
       );
+      toast.error(`Erro ao ${modalMode === "create" ? "criar" : "editar"} a receita:`)
     }
-    handleCloseModal();
   };
 
   const handleOpenDeleteConfirmationModal = (recipe: Recipe) => {
@@ -58,14 +88,22 @@ export default function ReceitasPage() {
     setIsDeleteConfirmationModalOpen(true);
   };
 
-  const handleDeleteRecipe = () => {
-    if (selectedRecipe) {
-      setRecipes((prev) =>
-        prev.filter((recipe) => recipe.id !== selectedRecipe.id)
-      );
+  const handleDeleteRecipe = async () => {
+    try {
+      if (selectedRecipe) {
+        await api.delete(`/recipes/${selectedRecipe.id}`);
 
-      setIsDeleteConfirmationModalOpen(false);
-      setSelectedRecipe(undefined);
+        setRecipes((prev) =>
+          prev.filter((recipe) => recipe.id !== selectedRecipe.id),
+        );
+
+        setIsDeleteConfirmationModalOpen(false);
+        setSelectedRecipe(undefined);
+      }
+      toast.success("Receita deletada com sucesso!");
+    } catch (error) {
+      console.error("Erro ao deletar a receita:", error);
+      toast.error("Erro ao deletar a receita:");
     }
   };
 
