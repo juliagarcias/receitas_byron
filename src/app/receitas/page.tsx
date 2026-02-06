@@ -15,7 +15,7 @@ export default function ReceitasPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | undefined>(
-    undefined
+    undefined,
   );
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export default function ReceitasPage() {
       } catch (error) {
         console.error("Erro ao buscar receitas:", error);
       }
-    }
+    };
     fetchRecipes();
   }, []);
 
@@ -47,44 +47,54 @@ export default function ReceitasPage() {
   };
 
   const handleSaveRecipe = async (recipeData: Omit<Recipe, "id"> | Recipe) => {
-    try{
+    try {
       if (modalMode === "create") {
         const response = await api.post("/recipes", recipeData);
         const newRecipe = response.data;
         setRecipes((prev) => [...prev, newRecipe]);
-    } else {
-      // modo "edit"
-      const updatedRecipe = recipeData as Recipe;
+      } else {
+        // modo "edit"
+        const updatedRecipe = recipeData as Recipe;
 
-      const response = await api.put(`/recipes/${updatedRecipe.id}`, updatedRecipe);
+        const response = await api.put(
+          `/recipes/${updatedRecipe.id}`,
+          updatedRecipe,
+        );
 
-      setRecipes((prev) =>
-        prev.map((recipe) =>
-          recipe.id === updatedRecipe.id ? response.data : recipe
-        )
+        setRecipes((prev) =>
+          prev.map((recipe) =>
+            recipe.id === updatedRecipe.id ? response.data : recipe,
+          ),
+        );
+      }
+      handleCloseModal();
+    } catch (error) {
+      console.error(
+        `Erro ao ${modalMode === "create" ? "criar" : "editar"} a receita:`,
+        error,
       );
     }
-    handleCloseModal();
-    } catch (error) {
-      console.error(`Erro ao ${modalMode === "create" ? "criar" : "editar"} a receita:`, error);
-    }
   };
-
-
 
   const handleOpenDeleteConfirmationModal = (recipe: Recipe) => {
     setSelectedRecipe(recipe);
     setIsDeleteConfirmationModalOpen(true);
   };
 
-  const handleDeleteRecipe = () => {
-    if (selectedRecipe) {
-      setRecipes((prev) =>
-        prev.filter((recipe) => recipe.id !== selectedRecipe.id)
-      );
+  const handleDeleteRecipe = async () => {
+    try {
+      if (selectedRecipe) {
+        await api.delete(`/recipes/${selectedRecipe.id}`);
 
-      setIsDeleteConfirmationModalOpen(false);
-      setSelectedRecipe(undefined);
+        setRecipes((prev) =>
+          prev.filter((recipe) => recipe.id !== selectedRecipe.id),
+        );
+
+        setIsDeleteConfirmationModalOpen(false);
+        setSelectedRecipe(undefined);
+      }
+    } catch (error) {
+      console.error("Erro ao deletar a receita:", error);
     }
   };
 
