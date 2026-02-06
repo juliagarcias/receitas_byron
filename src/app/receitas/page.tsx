@@ -7,6 +7,7 @@ import type { Recipe } from "@/app/lib/data";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import api from "../lib/api";
+import { toast } from "sonner";
 
 export default function ReceitasPage() {
   const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false);
@@ -25,6 +26,7 @@ export default function ReceitasPage() {
         setRecipes(response.data);
       } catch (error) {
         console.error("Erro ao buscar receitas:", error);
+        toast.error("Erro ao buscar receitas, tente novamente mais tarde.");
       }
     };
     fetchRecipes();
@@ -52,6 +54,7 @@ export default function ReceitasPage() {
         const response = await api.post("/recipes", recipeData);
         const newRecipe = response.data;
         setRecipes((prev) => [...prev, newRecipe]);
+        toast.success("Receita criada com sucesso!");
       } else {
         // modo "edit"
         const updatedRecipe = recipeData as Recipe;
@@ -66,13 +69,17 @@ export default function ReceitasPage() {
             recipe.id === updatedRecipe.id ? response.data : recipe,
           ),
         );
+
+        toast.success("Receita editada com sucesso!");
       }
       handleCloseModal();
+      
     } catch (error) {
       console.error(
         `Erro ao ${modalMode === "create" ? "criar" : "editar"} a receita:`,
         error,
       );
+      toast.error(`Erro ao ${modalMode === "create" ? "criar" : "editar"} a receita:`)
     }
   };
 
@@ -93,8 +100,10 @@ export default function ReceitasPage() {
         setIsDeleteConfirmationModalOpen(false);
         setSelectedRecipe(undefined);
       }
+      toast.success("Receita deletada com sucesso!");
     } catch (error) {
       console.error("Erro ao deletar a receita:", error);
+      toast.error("Erro ao deletar a receita:");
     }
   };
 
